@@ -2,11 +2,13 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import bcrypt from "bcrypt";
+import cors from "cors";
 
 import SpotifyWebApi from "spotify-web-api-node";
 
 dotenv.config();
 const app = express();
+app.use(cors());
 app.use(morgan("combined"));
 
 const scopes = ["user-read-recently-played"];
@@ -15,7 +17,10 @@ const state: string = process.env.HANDSHAKE_STATE || "";
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.SP_CLIENT_ID,
   clientSecret: process.env.SP_CLIENT_SECRET,
-  redirectUri: "http://localhost:9200/callback",
+  redirectUri:
+    process.env.NODE_ENV === "production"
+      ? "https://spotify-lp-lambda.herokuapp.com/"
+      : "http://localhost:9200/callback",
 });
 
 var authorizeURL = spotifyApi.createAuthorizeURL(scopes, state);
@@ -85,8 +90,10 @@ app.get("/", async (req: Request, res: Response) => {
   Never mind it's an old one`);
 });
 
-app.listen(9200, () => {
-  console.log("Listening on 9200");
+const port = process.env.PORT || 9200;
+
+app.listen(port, () => {
+  console.log(`Listening on ${port}`);
 });
 
 // bcrypt.hash("", 12).then((hash) => console.log("Hash - " + hash));
