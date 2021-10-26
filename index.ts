@@ -1,10 +1,11 @@
 import express from "express";
-import SpotifyWebApi from "spotify-web-api-node";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import bcrypt from "bcrypt";
+
+import SpotifyWebApi from "spotify-web-api-node";
 
 dotenv.config();
-
 const app = express();
 app.use(morgan("combined"));
 
@@ -32,7 +33,7 @@ const initAuth = async (code: string) => {
 
 const tokenRefresh = async () => {
   try {
-    const tokenData = await spotifyApi.refreshAccessToken();
+    await spotifyApi.refreshAccessToken();
   } catch (error) {
     console.error("Error refreshing token");
     console.error(error);
