@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import bcrypt from "bcrypt";
@@ -53,22 +53,32 @@ const getLastPlayed = async () => {
   }
 };
 
-app.get("/callback", async (req, res) => {
+app.get("/callback", async (req: Request, res: Response) => {
   await initAuth(String(req.query.code));
   res.send("Authenticated successfully");
 });
 
-app.get("/lp", async (req, res) => {
+app.get("/lp", async (req: Request, res: Response) => {
   await tokenRefresh();
   const tracks = await getLastPlayed();
   res.json(tracks);
 });
 
-app.get("/authenticate", async (req, res) => {
-  res.redirect(authorizeURL);
+app.get("/authenticate", async (req: Request, res: Response) => {
+  const hash = process.env.PASS_HASH || "";
+  if (!req.query.pass) {
+    res.send("No pass provided");
+    return;
+  }
+
+  if (bcrypt.compareSync(String(req.query.pass), hash)) {
+    res.redirect(authorizeURL);
+  } else {
+    res.send("Pass authentication failed");
+  }
 });
 
-app.get("/", async (req, res) => {
+app.get("/", async (req: Request, res: Response) => {
   await tokenRefresh();
   res.send(`
   Wanna hear a Cthulhu joke? 
@@ -78,3 +88,5 @@ app.get("/", async (req, res) => {
 app.listen(9200, () => {
   console.log("Listening on 9200");
 });
+
+// bcrypt.hash("", 12).then((hash) => console.log("Hash - " + hash));
