@@ -19,7 +19,7 @@ const spotifyApi = new SpotifyWebApi({
   clientSecret: process.env.SP_CLIENT_SECRET,
   redirectUri:
     process.env.NODE_ENV === "production"
-      ? "https://spotify-lp-lambda.herokuapp.com/"
+      ? "https://spotify-lp-lambda.herokuapp.com/callback"
       : "http://localhost:9200/callback",
 });
 
