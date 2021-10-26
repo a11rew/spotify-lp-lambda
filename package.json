@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.ts",
+    "start": "node build/index.js",
+    "dev": "nodemon index.ts",
     "build": "tsc --project ./",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "npm run build"
   },
   "keywords": [],
   "author": "",
